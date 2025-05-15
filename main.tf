@@ -90,7 +90,7 @@ module "eks" {
       from_port   = 443
       to_port     = 443
       type        = "ingress"
-      cidr_blocks = ["0.0.0.0/0"] # 실제 운영 환경에서는 IP 제한 권장
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
@@ -190,15 +190,6 @@ resource "kubernetes_deployment" "spring_boot_app" {
       spec {
         affinity {
           node_affinity {
-            # required_during_scheduling_ignored_during_execution {
-            #   node_selector_term {
-            #     match_expressions {
-            #       key      = "node_zone"
-            #       operator = "In"
-            #       values   = ["ap-northeast-2a", "ap-northeast-2c"]
-            #     }
-            #   }
-            # }
             preferred_during_scheduling_ignored_during_execution {
               weight = 1
               preference {
@@ -300,9 +291,6 @@ resource "aws_lb_listener" "alb_listener_ip_mode" {
 }
 
 resource "aws_lb_target_group" "alb_tg_ip_mode" {
-  # IP 모드에서는 AWS Load Balancer Controller가 Target Group을 관리하지만,
-  # Terraform에서 ALB 리스너의 default_action에 참조하기 위해 생성합니다.
-  # 컨트롤러는 Service 어노테이션에 따라 실제 설정을 업데이트합니다.
   name     = "spoons-spring-tg"
   port     = 80
   protocol = "HTTP"
